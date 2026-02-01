@@ -7,9 +7,26 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+// Route::middleware(['auth','verified','admin'])->group(function () {
+//     Route::get('/admin/dashboard', function () {
+//         return 'Admin Dashboard';
+//     });
+// });
+
+// Route::middleware(['auth','verified','salesman'])->group(function () {
+//     Route::get('/salesman/dashboard', function () {
+//         return 'Salesman Dashboard';
+//     });
+// });
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+
+Route::get('/dashboard2', function () {
+    return view('dashboard2');
+})->middleware(['auth', 'verified'])->name('dashboard2');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
