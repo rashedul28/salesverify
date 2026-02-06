@@ -43,8 +43,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Send email verification notification
+        $user->sendEmailVerificationNotification();
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect to login page with message instead of auto-login
+        return redirect(route('login'))->with('status', 'Registration successful! Please check your email to verify your account.');
     }
 }
