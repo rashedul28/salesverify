@@ -16,6 +16,13 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Source Id -->
+        <div class="mt-4">
+            <x-input-label for="source_id" :value="__('Source Id')" />
+            <x-text-input id="source_id" class="block mt-1 w-full" type="text" name="source_id" :value="old('source_id')" required autocomplete="off" />
+            <x-input-error :messages="$errors->get('source_id')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
