@@ -34,7 +34,8 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                {{ $slot ?? '' }}
+
                 <!-- Data tables -->
                 @stack('datatable-scripts')
             </main>

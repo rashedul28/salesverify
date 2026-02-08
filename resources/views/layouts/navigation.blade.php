@@ -15,6 +15,28 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                
+
+
+                <!-- Additional Navigation Links -->
+                @if(Auth::user()->role === 'salesman')
+                    <x-nav-link :href="route('salesman.create')" :active="request()->routeIs('sales.*')">
+                        {{ __('Sales') }}
+                    </x-nav-link>
+                @elseif(Auth::user()->role === 'admin')
+                    <x-nav-link :href="route('admin.create')" :active="request()->routeIs('offers.*')">
+                        {{ __('Offers') }}
+                    </x-nav-link>
+                    &nbsp;
+                    <x-nav-link :href="route('admin.files')" :active="request()->routeIs('admin.files')">
+                        {{ __('File Upload') }}
+                    </x-nav-link>
+                    &nbsp;
+                    <x-nav-link :href="route('sales.file-matches.index')" :active="request()->routeIs('sales.file-matches.index')">
+                        {{ __('Report') }}
+                    </x-nav-link>
+                    
+                @endif
                 </div>
             </div>
 
