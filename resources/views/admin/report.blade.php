@@ -20,36 +20,56 @@
                                 <div class="card-header">
                                         <form action="{{ route('sales.generate-file-matches') }}" method="POST" class="d-inline">
                                             @csrf
-                                            @method('POST') <!-- POST method for regeneration -->   
+                                            @method('POST') <!-- POST method for regeneration -->  
+                                            <label for="start_date">Start Date</label>
+                                            <input type="date" name="start_date" id="start_date" class="form-control" required>
+                                            <label for="end_date">End Date</label>
+                                            <input type="date" name="end_date" id="end_date" class="form-control" required>
                                             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Regenarate Summary</button>
                                         </form> 
                                 </div>
 
+                                &nbsp;
+                                &nbsp;
+                                &nbsp;
+
+                                &nbsp;
+
+
                                 <div class="card-body">
-                                    <table id="matchesTable" class="table table-striped table-hover table-bordered" style="width:100%">
-                                        <thead class="table-dark">
+                                    @if (isset($report) && count($report) > 0)
+                                    <h2 class="mt-5">Report Results</h2>
+                                    <table id="matchesTable" class="table table-bordered table-striped">
+                                        <thead class="thead-dark">
                                             <tr>
-                                
+                                                <th>No</th>
                                                 <th>Source ID</th>
-                                                <th>Offer Source</th>
+                                                <th>Offers Source</th>
                                                 <th>Offer Name</th>
-                                                <th>Sales Count</th>
-                                                <th>Last Updated</th>
+                                                <th>Sales</th>
+                                                <th>Target</th>
+                                                <th>Verify</th>
+                                                <th>Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($matches as $row)
-                                            <tr>
-                                            
-                                                <td>{{ $row->source_id }}</td>
-                                                <td>{{ $row->offer_source_name }}</td>
-                                                <td>{{ $row->offer_name }}</td>
-                                                <td class="text-end">{{ number_format($row->sales_count) }}</td>
-                                                <td>{{ $row->updated_at->format('Y-m-d H:i') }}</td>
-                                            </tr>
+                                            @foreach ($report as $row)
+                                                <tr>
+                                                    <td>{{ $row['no'] }}</td>
+                                                    <td>{{ $row['source_id'] }}</td>
+                                                    <td>{{ $row['offers_source'] }}</td>
+                                                    <td>{{ $row['offer_name'] }}</td>
+                                                    <td>{{ $row['sales'] }}</td>
+                                                    <td>{{ $row['target'] }}</td>
+                                                    <td>{{ $row['verify'] }}</td>
+                                                    <td>{{ $row['date'] }}</td>
+                                                </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
+                                @elseif (isset($report))
+                                    <p class="mt-5">No matching data found for the selected date range.</p>
+                                @endif
                                 </div>
                             </div>
 

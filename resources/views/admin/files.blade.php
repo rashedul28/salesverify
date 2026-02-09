@@ -20,7 +20,7 @@
                         </form>
                     </div>
 
-                    <div>
+                   
                         <h2 class="text-2xl font-bold mb-4">Uploaded Files</h2>
                         <table id="datatables" class="min-w-full bg-white border border-gray-200">
                             <thead>
@@ -48,6 +48,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    
                 </div>
             </div>
         </div>

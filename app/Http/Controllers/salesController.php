@@ -19,6 +19,15 @@ class salesController extends Controller
         //
     }
 
+
+    public function SalesDashboard()
+    {
+        $sales = Sale::all();
+        return view('salesmandashboard', compact('sales'));
+         
+    }
+    
+
     /**
      * Show the form for creating a new resource.
      */

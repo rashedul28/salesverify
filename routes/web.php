@@ -22,14 +22,10 @@ Route::get('/', function () {
 //     });
 // });
 
-Route::get('/dashboard', function () {
-    return view('admindashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [adminController::class, 'AdminDashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 
-Route::get('/dashboard2', function () {
-    return view('salesmandashboard');
-})->middleware(['auth', 'verified'])->name('dashboard2');
+Route::get('/dashboard2', [salesController::class, 'SalesDashboard'])->middleware(['auth', 'verified'])->name('dashboard2');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

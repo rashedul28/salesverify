@@ -6,9 +6,11 @@ use App\Models\C;
 use App\Models\File;
 use App\Models\Offer;
 use App\Models\OfferSource;
+use App\Models\Sale;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Laravel\Pail\Files;
 
 class adminController extends Controller
 {
@@ -17,8 +19,15 @@ class adminController extends Controller
      */
     public function index()
     {
-        //
+        //return 
     }
+
+
+    public function AdminDashboard()
+    {
+         $offers = Offer::with('source')->get();
+            return view('admindashboard', compact('offers'));
+    }   
 
     /**
      * Show the form for creating a new resource.
@@ -156,43 +165,65 @@ class adminController extends Controller
     }
 
 
-    public function generateSalesFileMatchTable()
+    public function generateSalesFileMatchTable(Request $request)
     {
-        $rows = DB::table('sales')
-            ->join('files', function ($join) {
-                $join->on('sales.source_id', '=', 'files.source_id')
-                    ->on('sales.offer_source_name', '=', 'files.offer_source')
-                    ->on('sales.offer_name', '=', 'files.offer_name');
-            })
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $start = $request->start_date;
+        $end = $request->end_date;
+
+        // Get grouped sales data for the date range (combinations of source_id, offer_source_name, offer_name)
+        $salesGroups = Sale::whereBetween('created_at', [$start . ' 00:00:00', $end . ' 23:59:59'])
+            ->groupBy('source_id', 'offer_source_name', 'offer_name')
             ->select(
-                'sales.source_id',
-                'sales.offer_source_name',
-                'sales.offer_name',
-                DB::raw('COUNT(sales.id) as sales_count')
-            )
-            ->groupBy(
-                'sales.source_id',
-                'sales.offer_source_name',
-                'sales.offer_name'
+                'source_id',
+                'offer_source_name as offers_source',
+                'offer_name',
+                DB::raw('count(*) as sales')
             )
             ->get();
 
-        foreach ($rows as $row) {
-            DB::table('sales_file_matches')->updateOrInsert(
-                [
-                    'source_id'         => $row->source_id,
-                    'offer_source_name' => $row->offer_source_name,
-                    'offer_name'        => $row->offer_name,
-                ],
-                [
-                    'sales_count' => $row->sales_count,
-                    'updated_at'  => now(),
-                    'created_at'  => now(),
-                ]
-            );
+        // In generateSalesFileMatchTable()
+        $fileGroups = File::whereBetween('created_at', [$start . ' 00:00:00', $end . ' 23:59:59'])
+            ->groupBy('source_id', 'offer_source', 'offer_name')  // ← Change 'offer' to 'offer_name'
+            ->select(
+                'source_id',
+                'offer_source as offers_source',
+                'offer_name',  // ← No alias needed if already named correctly
+                DB::raw('count(*) as target')
+            )
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->source_id . '|' . strtolower(trim($item->offers_source)) . '|' . strtolower(trim($item->offer_name));
+            });
+
+            // dd($fileGroups, $salesGroups);
+
+        // Build the report array (only include rows where there is a matching combination in sales)
+        $report = [];
+        foreach ($salesGroups as $index => $sale) {
+            $compositeKey = $sale->source_id . '|' . strtolower(trim($sale->offers_source)) . '|' . strtolower(trim($sale->offer_name));
+            $target = $fileGroups->has($compositeKey) ? $fileGroups[$compositeKey]->target : 0;
+            $verify = ($sale->sales === $target) ? 'yes' : 'no';
+
+            $report[] = [
+                'no' => $index + 1,
+                'source_id' => $sale->source_id,
+                'offers_source' => $sale->offers_source,
+                'offer_name' => $sale->offer_name,
+                'sales' => $sale->sales,
+                'target' => $target,
+                'verify' => $verify,
+                'date' => $start . ' to ' . $end,
+            ];
         }
 
-        return back()->with('success', 'Sales count with date generated successfully');
+        
+
+        return view('admin.report', compact('report'));
     }
 
 
