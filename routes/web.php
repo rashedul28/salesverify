@@ -22,10 +22,12 @@ Route::get('/', function () {
 //     });
 // });
 
-Route::get('/dashboard', [adminController::class, 'AdminDashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::post('/dashboard', [adminController::class, 'generateSalesFileMatchTable'])->middleware(['auth', 'verified'])->name('dashboard.post');
+Route::get('/dashboard', [adminController::class, 'showSalesFileMatches'])->middleware(['auth', 'verified'])->name('dashboard.get');
 
 
 Route::get('/dashboard2', [salesController::class, 'SalesDashboard'])->middleware(['auth', 'verified'])->name('dashboard2');
+Route::post('/dashboard2', [salesController::class, 'store'])->middleware(['auth', 'verified'])->name('salesman.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -48,8 +50,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/fileupload', [adminController::class, 'fileUpload'])->name('admin.fileupload'); 
 
 
-    Route::post("/admin/report", [adminController::class, 'generateSalesFileMatchTable'])->name('sales.generate-file-matches');   
-    Route::get("/admin/report", [adminController::class, 'showSalesFileMatches'])->name('sales.file-matches.index');   
+    // Route::post("/admin/report", [adminController::class, 'generateSalesFileMatchTable'])->name('sales.generate-file-matches');   
+    // Route::get("/admin/report", [adminController::class, 'showSalesFileMatches'])->name('sales.file-matches.index');  
+    
+    Route::get('/offers/edit/{id}/{id2}', [adminController::class, 'PassKey'])->name('offers.edit');
+    Route::get('/offers/edit/ok', [adminController::class, 'EditOffer'])->name('offers.ok');
+    Route::get('/offers/delete/{id}/{id2}', [adminController::class, 'DeleteOffer'])->name('offers.delete');
 
 });
 

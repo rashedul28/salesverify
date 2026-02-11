@@ -22,6 +22,57 @@ class adminController extends Controller
         //return 
     }
 
+    public function PassKey($id, $id2)
+    {
+        // Fetch the offer by its ID
+        $offer = Offer::findOrFail($id);
+
+        // Fetch all offer sources for the dropdown
+        $offerSources = OfferSource::findOrFail($id2);
+
+        // dd($offer->name ,$offerSources->name);
+
+        return view('admin.editOffer', compact('offer', 'offerSources'));
+    }
+
+    public function EditOffer(Request $request)
+    {
+        $request->validate([
+            'offer_id' => 'required|integer|exists:offers,id',
+            'offer_source_id' => 'required|integer|exists:offer_sources,id',
+            'offer_source_name' => 'required|string|max:255',
+            'offer_name' => 'required|string|max:255',
+        ]);
+
+        // Find the offer by its ID
+        $offer = Offer::findOrFail($request->input('offer_id'));
+        $offerSource = OfferSource::findOrFail($request->input('offer_source_id'));
+
+        // Update the offer details
+        $offer->name = $request->input('offer_name');
+        $offerSource->name = $request->input('offer_source_name');
+        $offerSource->save();
+        $offer->save();
+
+        // Redirect back to the offers list with a success message
+        return redirect()->route('admin.create')->with('success', 'Offer updated successfully.');
+    }
+
+    public function DeleteOffer($id, $id2)
+    {
+        // Find the offer by its ID
+        $offer = Offer::findOrFail($id2);
+
+        $offerSource = OfferSource::findOrFail($id);
+
+        // Delete the offer
+        $offer->delete();
+        $offerSource->delete();
+
+        // Redirect back to the offers list with a success message
+        return redirect()->route('admin.create')->with('success', 'Offer deleted successfully.');
+    }
+
 
     public function AdminDashboard()
     {
@@ -35,7 +86,8 @@ class adminController extends Controller
     public function create()
     {
         $offerSource = OfferSource::all();
-        return view('admin.createoffers', compact('offerSource'));
+        $offers = Offer::with('source')->get();
+        return view('admin.createoffers', compact('offerSource', 'offers'));
     }
 
     /**
@@ -223,7 +275,7 @@ class adminController extends Controller
 
         
 
-        return view('admin.report', compact('report'));
+        return view('admindashboard', compact('report'));
     }
 
 
@@ -247,6 +299,6 @@ class adminController extends Controller
             return $row;
             });
 
-        return view('admin.report', compact('matches'));
+        return view('admindashboard', compact('matches'));
     }
 }

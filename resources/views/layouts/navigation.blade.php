@@ -5,15 +5,22 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    @if(Auth::user()->role === 'admin')
+                    <a href="{{ route('dashboard.get') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
+                    @elseif(Auth::user()->role === 'salesman')
+                    <a href="{{ route('dashboard2') }}">
+                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    </a>
+                    @endif
+                        
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @if(Auth::user()->role === 'admin')
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('dashboard.get')" :active="request()->routeIs('dashboard.get')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     @elseif(Auth::user()->role === 'salesman')
@@ -26,9 +33,9 @@
 
                 <!-- Additional Navigation Links -->
                 @if(Auth::user()->role === 'salesman')
-                    <x-nav-link :href="route('salesman.create')" :active="request()->routeIs('sales.*')">
-                        {{ __('Sales') }}
-                    </x-nav-link>
+                    <!-- <x-nav-link :href="route('salesman.create')" :active="request()->routeIs('sales.*')"> -->
+                        <!-- {{ __('Sales') }} -->
+                    <!-- </x-nav-link> -->
                 @elseif(Auth::user()->role === 'admin')
                     <x-nav-link :href="route('admin.create')" :active="request()->routeIs('offers.*')">
                         {{ __('Offers') }}
@@ -36,10 +43,6 @@
                     &nbsp;
                     <x-nav-link :href="route('admin.files')" :active="request()->routeIs('admin.files')">
                         {{ __('File Upload') }}
-                    </x-nav-link>
-                    &nbsp;
-                    <x-nav-link :href="route('sales.file-matches.index')" :active="request()->routeIs('sales.file-matches.index')">
-                        {{ __('Report') }}
                     </x-nav-link>
                     
                 @endif
@@ -95,9 +98,15 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            @if(Auth::user()->role === 'admin')
+            <x-responsive-nav-link :href="route('dashboard.get')" :active="request()->routeIs('dashboard.get')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @elseif(Auth::user()->role === 'salesman')
+            <x-responsive-nav-link :href="route('dashboard2')" :active="request()->routeIs('dashboard2')">
+                {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

@@ -23,7 +23,13 @@ class salesController extends Controller
     public function SalesDashboard()
     {
         $sales = Sale::all();
-        return view('salesmandashboard', compact('sales'));
+
+        $offerSources = OfferSource::all();
+
+        // offers with source_id
+        $offers = Offer::select('id', 'name', 'offer_source_id')->get();
+
+        return view('salesmandashboard', compact('sales', 'offerSources', 'offers'));
          
     }
     
@@ -68,7 +74,7 @@ class salesController extends Controller
         'source_id'         => auth()->user()->source_id,
     ]);
 
-    return back()->with('success', 'Sale saved');
+    return redirect()->route('dashboard2')->with('success', 'Sale recorded successfully.');
     }
 
     /**

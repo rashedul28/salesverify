@@ -8,7 +8,7 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- custom favicon -->
-        <link rel="icon" type="image/x-icon" href="{{ asset('logo.svg') }}">
+        <link rel="icon" type="image/x-icon" href="{{ asset('logo.jpg') }}">
 
         
 
