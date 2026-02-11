@@ -20,11 +20,14 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
-        'source_id',
         'password',
         'role',
     ];
 
+    public function sourceIds()
+    {
+        return $this->hasMany(SourceId::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -47,4 +50,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+
+
+    
 }

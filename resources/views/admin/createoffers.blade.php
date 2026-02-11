@@ -59,9 +59,13 @@
                                 <td>{{ $offer->source->name ?? 'N/A' }}</td>  <!-- Safe access if no source -->
                                 <td>{{ $offer->created_at }}</td>
                                 <td>
-                                    <a href="/offers/edit/{{$offer->source->id}}/{{$offer->id}}">Edit</a>
+                                    <a href="/offers/edit/{{$offer->source->id}}/{{$offer->id}}">
+                                        <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Edit</button>   
+                                    </a>
                                     &nbsp;|&nbsp;
-                                    <a href="/offers/delete/{{$offer->source->id}}/{{$offer->id}}">Delete</a>
+                                    <a href="/offers/delete/{{$offer->source->id}}/{{$offer->id}}">
+                                        <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button>   
+                                    </a>
                                 </td>
                             </tr>
                         @empty

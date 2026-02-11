@@ -42,8 +42,8 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::get('/salesman/create', [salesController::class, 'create'])->name('salesman.create');
-    Route::post('/salesman/store', [salesController::class, 'store'])->name('salesman.store'); 
+    // Route::get('/salesman/create', [salesController::class, 'create'])->name('salesman.create');
+    // Route::post('/salesman/store', [salesController::class, 'store'])->name('salesman.store'); 
 
 
     Route::get('/admin/files', [adminController::class, 'files'])->name('admin.files'); 
@@ -56,6 +56,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/offers/edit/{id}/{id2}', [adminController::class, 'PassKey'])->name('offers.edit');
     Route::get('/offers/edit/ok', [adminController::class, 'EditOffer'])->name('offers.ok');
     Route::get('/offers/delete/{id}/{id2}', [adminController::class, 'DeleteOffer'])->name('offers.delete');
+
+    Route::get('/users', [adminController::class, 'index'])->name('users.index');
+    // Route::get('/users/assign-source/{id}', [adminController::class, 'assignSource'])->name('users.assign-source');
+    Route::patch('/users/assign-source/{id}', [adminController::class, 'storeAssignedSource'])->name('users.store-assigned-source');
+    Route::get('/users/delete/{id}', [adminController::class, 'deleteUser'])->name('users.delete');
+
+
+    
 
 });
 

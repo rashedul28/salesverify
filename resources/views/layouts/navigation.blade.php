@@ -20,23 +20,19 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @if(Auth::user()->role === 'admin')
-                    <x-nav-link :href="route('dashboard.get')" :active="request()->routeIs('dashboard.get')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                        <x-nav-link :href="route('dashboard.get')" :active="request()->routeIs('dashboard.get')">
+                            {{ __('Admin/Dashboard') }}
+                        </x-nav-link>
                     @elseif(Auth::user()->role === 'salesman')
-                    <x-nav-link :href="route('dashboard2')" :active="request()->routeIs('dashboard2')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                        <x-nav-link :href="route('dashboard2')" :active="request()->routeIs('dashboard2')">
+                            {{ __('User/Dashboard') }}
+                        </x-nav-link>
                     @endif
                 
 
 
                 <!-- Additional Navigation Links -->
-                @if(Auth::user()->role === 'salesman')
-                    <!-- <x-nav-link :href="route('salesman.create')" :active="request()->routeIs('sales.*')"> -->
-                        <!-- {{ __('Sales') }} -->
-                    <!-- </x-nav-link> -->
-                @elseif(Auth::user()->role === 'admin')
+                @if(Auth::user()->role === 'admin')
                     <x-nav-link :href="route('admin.create')" :active="request()->routeIs('offers.*')">
                         {{ __('Offers') }}
                     </x-nav-link>
@@ -44,8 +40,12 @@
                     <x-nav-link :href="route('admin.files')" :active="request()->routeIs('admin.files')">
                         {{ __('File Upload') }}
                     </x-nav-link>
-                    
+
+                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                        {{__('User')}}
+                    </x-nav-link>
                 @endif
+                    
                 </div>
             </div>
 

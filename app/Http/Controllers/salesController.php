@@ -7,6 +7,7 @@ use App\Models\File;
 use App\Models\Offer;
 use App\Models\OfferSource;
 use App\Models\Sale;
+use App\Models\SourceId;
 use Illuminate\Http\Request;
 
 class salesController extends Controller
@@ -22,14 +23,18 @@ class salesController extends Controller
 
     public function SalesDashboard()
     {
-        $sales = Sale::all();
+        $sales = Sale::where('user_id', auth()->id())->get();
+
+        $sources = SourceId::where('user_id', auth()->id())->get();
 
         $offerSources = OfferSource::all();
 
         // offers with source_id
         $offers = Offer::select('id', 'name', 'offer_source_id')->get();
 
-        return view('salesmandashboard', compact('sales', 'offerSources', 'offers'));
+        // dd($sources->source_id);
+
+        return view('salesmandashboard', compact('sales', 'offerSources', 'offers', 'sources'));
          
     }
     
@@ -48,34 +53,46 @@ class salesController extends Controller
         
     }
 
+
+
+
+
+
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
              $request->validate([
-        'offer_source_id' => 'required|exists:offer_sources,id',
-        'offer_id'        => 'required|exists:offers,id',
-    ]);
+                'offer_source_id' => 'required|exists:offer_sources,id',
+                'offer_id'        => 'required|exists:offers,id',
+                'source_id'       => 'required|exists:source_ids,id',
+            ]);
 
-    $offerSource = OfferSource::find($request->offer_source_id);
-    $offer       = Offer::find($request->offer_id);
+            $offerSource = OfferSource::find($request->offer_source_id);
+            $offer       = Offer::find($request->offer_id);
 
-    // safety check
-    if ($offer->offer_source_id != $offerSource->id) {
-        return back()->withErrors(['offer_id' => 'Offer mismatch']);
+            // safety check
+            if ($offer->offer_source_id != $offerSource->id) {
+                return back()->withErrors(['offer_id' => 'Offer mismatch']);
+            }
+
+            Sale::create([
+                'user_id'           => auth()->id(),
+                'offer_source_id'   => $offerSource->id,
+                'offer_source_name' => $offerSource->name, 
+                'offer_id'          => $offer->id,
+                'offer_name'        => $offer->name,        
+                'source_id'         => $request->source_id,
+            ]);
+
+            return redirect()->route('dashboard2')->with('success', 'Sale recorded successfully.');
     }
 
-    Sale::create([
-        'offer_source_id'   => $offerSource->id,
-        'offer_source_name' => $offerSource->name, 
-        'offer_id'          => $offer->id,
-        'offer_name'        => $offer->name,        
-        'source_id'         => auth()->user()->source_id,
-    ]);
 
-    return redirect()->route('dashboard2')->with('success', 'Sale recorded successfully.');
-    }
+
+
 
     /**
      * Display the specified resource.

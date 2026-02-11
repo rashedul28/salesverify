@@ -29,9 +29,25 @@
                         </select>
                     </div>
 
+                    
+
+                    {{-- source id --}}
+                    <div class="mb-4">
+                        <label class="block mb-2">Source ID</label>
+                        <select id="source_id" name="source_id" class="w-full border p-2" required>
+                            <option value="">-- Select Source ID --</option> 
+                            @foreach($sources as $source)
+                                <option value="{{ $source->source_id ?? 'N/A' }}">
+                                    {{ $source->source_id ?? 'N/A' }}
+                                </option>   
+                            @endforeach
+                        </select>
+                    </div>
+
                     <button class="bg-blue-600 text-white px-6 py-2 rounded">
                         Submit
                     </button>
+
                 </form>
 
                 &nbsp;

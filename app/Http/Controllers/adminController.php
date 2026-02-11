@@ -7,6 +7,8 @@ use App\Models\File;
 use App\Models\Offer;
 use App\Models\OfferSource;
 use App\Models\Sale;
+use App\Models\SourceId;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -14,13 +16,79 @@ use Laravel\Pail\Files;
 
 class adminController extends Controller
 {
+
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //return 
+    {        
+         $u = User::with('sourceIds')
+                    ->whereNotIn('role', ['admin'])
+                    ->get();
+
+        return view('users', compact('u'));
     }
+
+    public function storeAssignedSource(Request $request, $id)
+    {
+        $request->validate([
+            'source_ids' => 'nullable|string',   // can be empty
+        ]);
+
+        // Get the submitted string → "4, 5,7, 9" → clean → [4,5,7,9]
+        $input = $request->input('source_ids', '');
+        $submittedIds = array_filter(
+            array_map('trim', explode(',', $input)),
+            fn($v) => is_numeric($v) && $v > 0
+        );
+
+        $submittedIds = array_unique(array_map('intval', $submittedIds));
+
+        // Find user (you may want to restrict to non-admins)
+        $user = User::where('role', '!=', 'admin')->findOrFail($id);
+
+        // Get current source_ids for this user (as array of integers)
+        $currentIds = $user->sourceIds()->pluck('source_id')->toArray();
+
+        // ── 1. IDs to ADD (in submitted but not in current)
+        $toAdd = array_diff($submittedIds, $currentIds);
+
+        // ── 2. IDs to REMOVE (in current but not in submitted)
+        $toRemove = array_diff($currentIds, $submittedIds);
+
+        
+
+        DB::transaction(function () use ($user, $toAdd, $toRemove) {
+
+            // Delete removed ones
+            if (!empty($toRemove)) {
+                $user->sourceIds()
+                    ->whereIn('source_id', $toRemove)
+                    ->delete();
+            }
+
+            // Insert new ones
+            if (!empty($toAdd)) {
+                $records = array_map(function ($sourceId) use ($user) {
+                    return [
+                        'user_id'     => $user->id,
+                        'source_id'   => $sourceId,
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
+                    ];
+                }, $toAdd);
+
+                SourceId::insert($records);
+            }
+        });
+
+        return redirect()
+            ->route('users.index')           // or wherever your users list is
+            ->with('success', 'Source IDs updated successfully.');
+    }
+
+    
 
     public function PassKey($id, $id2)
     {
@@ -74,11 +142,12 @@ class adminController extends Controller
     }
 
 
-    public function AdminDashboard()
-    {
-         $offers = Offer::with('source')->get();
-            return view('admindashboard', compact('offers'));
-    }   
+    // public function AdminDashboard()
+    // {
+    //      $offers = Offer::with('source')->get();
+    //      $users = User::all();
+    //         return view('admindashboard', compact('offers', 'users'));
+    // }   
 
     /**
      * Show the form for creating a new resource.
@@ -127,11 +196,11 @@ class adminController extends Controller
         return redirect()->route('admin.create');
     }
 
-    public function report(Request $request)
-    {
-        return view('admin.report');
+    // public function report(Request $request)
+    // {
+    //     return view('admin.report');
 
-    }
+    // }
 
     /**
      * Display the specified resource.
@@ -273,6 +342,8 @@ class adminController extends Controller
             ];
         }
 
+
+        
         
 
         return view('admindashboard', compact('report'));
@@ -298,6 +369,8 @@ class adminController extends Controller
             $row->updated_at = Carbon::parse($row->updated_at);
             return $row;
             });
+
+            
 
         return view('admindashboard', compact('matches'));
     }
