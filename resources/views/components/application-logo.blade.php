@@ -1,1 +1,1 @@
-<img src="{{ asset('logo.jpg') }}" {{ $attributes }} alt="CPA Sales verification Platforms">
+<img src="{{ asset('logo.jpg') }}" {{ $attributes }} alt="CPA Sales verification Platforms" style=" width: 450px; height: 300px;">

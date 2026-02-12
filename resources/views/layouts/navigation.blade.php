@@ -5,16 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    @if(Auth::user()->role === 'admin')
-                    <a href="{{ route('dashboard.get') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                    @elseif(Auth::user()->role === 'salesman')
-                    <a href="{{ route('dashboard2') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                    @endif
-                        
+                    {{ config('app.name') }}    
                 </div>
 
                 <!-- Navigation Links -->
