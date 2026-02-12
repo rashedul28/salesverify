@@ -54,7 +54,7 @@
                                                     </td>
 
                                                     <td>
-                                                        <a href="{{ url('/users/delete/'.$data->id) }}">
+                                                        <a href="/users/delete/{{ $data->id }}">
                                                             <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                                                                 Delete
                                                             </button>

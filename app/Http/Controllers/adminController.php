@@ -234,6 +234,27 @@ class adminController extends Controller
         //
     }
 
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Prevent deletion of admin users
+        if ($user->role === 'admin') {
+            return redirect()
+                ->route('users.index')
+                ->with('error', 'Cannot delete admin users.');
+        }
+
+        $usersourceid = SourceId::where('user_id', $user->id);
+        $usersourceid->delete();
+
+        $user->delete();
+
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'User deleted successfully.');
+    }
+
     public function files()
     {
         $files = File::all();
