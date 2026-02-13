@@ -68,6 +68,7 @@ class salesController extends Controller
                 'offer_source_id' => 'required|exists:offer_sources,id',
                 'offer_id'        => 'required|exists:offers,id',
                 'source_id'       => 'required|exists:source_ids,id',
+                'sales_date'      => 'required|date|before_or_equal:today',
             ]);
 
             $offerSource = OfferSource::find($request->offer_source_id);
@@ -85,6 +86,7 @@ class salesController extends Controller
                 'offer_id'          => $offer->id,
                 'offer_name'        => $offer->name,        
                 'source_id'         => $request->source_id,
+                'created_at'        => $request->sales_date,
             ]);
 
             return redirect()->route('dashboard2')->with('success', 'Sale recorded successfully.');
