@@ -5,7 +5,9 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    {{ config('app.name') }}    
+                    <b>
+                        {{ config('app.name') }}    
+                    </b>
                 </div>
 
                 <!-- Navigation Links -->

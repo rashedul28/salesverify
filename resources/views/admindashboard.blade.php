@@ -21,10 +21,15 @@
                                             @method('POST') <!-- POST method for regeneration -->  
                                             <label for="start_date">Start Date</label>
                                             <input type="date" name="start_date" id="start_date" class="form-control" required>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;
                                             <label for="end_date">End Date</label>
+                                            <label for="salesman">User</label>
+                                            <select name="salesman" id="">
+                                                <option value="all">All</option>
+                                                @foreach($users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </select>
                                             <input type="date" name="end_date" id="end_date" class="form-control" required>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;
                                             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">SUBMIT</button>
                                         </form> 
                                 </div>

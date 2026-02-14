@@ -46,7 +46,8 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         // Send email verification notification
-        $user->sendEmailVerificationNotification();
+        // $user->sendEmailVerificationNotification();
+        $user->markEmailAsVerified();
 
         // Redirect to login page with message instead of auto-login
         return redirect(route('login'))->with('status', 'Registration successful! Please check your email to verify your account.');
