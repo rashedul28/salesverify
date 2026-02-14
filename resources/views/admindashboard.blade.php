@@ -19,26 +19,27 @@
                                         <form action="{{ route('dashboard.post') }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('POST') <!-- POST method for regeneration -->  
+                                            
                                             <label for="start_date">Start Date</label>
-                                            <input type="date" name="start_date" id="start_date" class="form-control" required>
+                                            <input type="date" name="start_date" id="start_date" max="{{ now()->format('Y-m-d') }}" value="{{ old('start_date')}}" class="form-control" required>
+                                            
                                             <label for="end_date">End Date</label>
+                                            <input type="date" name="end_date" id="end_date" max="{{ now()->format('Y-m-d') }}" value="{{ old('end_date') }}" class="form-control" required>
+                                           
                                             <label for="salesman">User</label>
-                                            <select name="salesman" id="">
-                                                <option value="all">All</option>
-                                                @foreach($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            <select name="user_id" class="form-select" required>
+                                                <option value="">Select User</option>
+                                                @foreach($saleuser as $data)
+                                                    <option value="{{ $data->user_id }}">
+                                                        {{ old('user_id') == $data->user_id ? 'selected' : '' }}
+                                                        {{ $data->user->name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
-                                            <input type="date" name="end_date" id="end_date" class="form-control" required>
+
                                             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">SUBMIT</button>
                                         </form> 
                                 </div>
-
-                                &nbsp;
-                                &nbsp;
-                                &nbsp;
-
-                                &nbsp;
 
 
                                 <div class="card-body">
@@ -48,19 +49,21 @@
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th>No</th>
+                                                <th>User Name</th>
                                                 <th>Source ID</th>
                                                 <th>Offers Source</th>
                                                 <th>Offer Name</th>
-                                                <th>Sales</th>
+                                                <th>Total Sales</th>
                                                 <th>Target</th>
-                                                <th>Verify</th>
+                                                <th>Matched?</th>
                                                 <th>Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($report as $row)
-                                                <tr>
+                                            @foreach ($report as $row) 
+                                                <tr @class( ['table-danger' => $row['sales'] !== $row['target'], 'table-success' => $row['sales'] === $row['target'] ])>
                                                     <td>{{ $row['no'] }}</td>
+                                                    <td>{{$selectedUserName}}</td>
                                                     <td>{{ $row['source_id'] }}</td>
                                                     <td>{{ $row['offers_source'] }}</td>
                                                     <td>{{ $row['offer_name'] }}</td>
@@ -77,9 +80,6 @@
                                 @endif
                                 </div>
                             </div>
-
-                            
-
                         </div>
                     </div>
                 </div>

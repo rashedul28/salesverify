@@ -312,13 +312,21 @@ class adminController extends Controller
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+            'user_id' => 'required|integer|exists:users,id',    
         ]);
+
+        $request->flash();
 
         $start = $request->start_date;
         $end = $request->end_date;
+        $userId = $request->user_id;
+
+        // dd($start, $end, $userId);
+
+        
 
         // Get grouped sales data for the date range (combinations of source_id, offer_source_name, offer_name)
-        $salesGroups = Sale::whereBetween('created_at', [$start . ' 00:00:00', $end . ' 23:59:59'])
+        $salesGroups = Sale::whereBetween('created_at', [$start . ' 00:00:00', $end . ' 23:59:59'])->where('user_id', $userId)
             ->groupBy('source_id', 'offer_source_name', 'offer_name')
             ->select(
                 'source_id',
@@ -353,6 +361,7 @@ class adminController extends Controller
 
             $report[] = [
                 'no' => $index + 1,
+                'user_id' => $userId, // Include user_id for reference
                 'source_id' => $sale->source_id,
                 'offers_source' => $sale->offers_source,
                 'offer_name' => $sale->offer_name,
@@ -362,12 +371,17 @@ class adminController extends Controller
                 'date' => $start . ' to ' . $end,
             ];
         }
-
+        
 
         
         
+        $saleuser = Sale::select('user_id')->distinct()->with('user')->get();
 
-        return view('admindashboard', compact('report'));
+        $selectedUserName = $userId 
+        ? $saleuser->firstWhere('user_id', $userId)?->user?->name 
+        : 'Unknown';
+
+        return view('admindashboard', compact('report', 'saleuser', 'selectedUserName'));
     }
 
 
@@ -391,8 +405,16 @@ class adminController extends Controller
             return $row;
             });
 
+            // dd($users);
+            
+            $saleuser = Sale::select('user_id')->distinct()->with('user')->get();
+
+            // dd($saleuser);
+
             
 
-        return view('admindashboard', compact('matches'));
+            
+
+        return view('admindashboard', compact('matches', 'saleuser'));
     }
 }

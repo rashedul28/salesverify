@@ -77,6 +77,7 @@ class salesController extends Controller
             // safety check
             if ($offer->offer_source_id != $offerSource->id) {
                 return back()->withErrors(['offer_id' => 'Offer mismatch']);
+                // dd('Offer mismatch');
             }
 
             Sale::create([
@@ -88,6 +89,7 @@ class salesController extends Controller
                 'source_id'         => $request->source_id,
                 'created_at'        => $request->sales_date,
             ]);
+            // dd($request->all());
 
             return redirect()->route('dashboard2')->with('success', 'Sale recorded successfully.');
     }
