@@ -38,7 +38,7 @@
                                 @foreach($files as $file)
                                     <tr>
                                         <td class="py-2 px-4 border-b">{{ $file->id }}</td>
-                                        <td class="py-2 px-4 border-b">{{ $file->created_at }}</td>
+                                        <td class="py-2 px-4 border-b">{{ $file->date_time }}</td>
                                         <td class="py-2 px-4 border-b">{{ $file->offer_source}}</td>
                                         <td class="py-2 px-4 border-b">{{ $file->offer_name }}</td>
                                         <td class="py-2 px-4 border-b">{{ $file->country }}</td>
