@@ -94,16 +94,17 @@ class salesController extends Controller
                 
             }
 
-
-            Sale::create([
-                'user_id'           => auth()->id(),
-                'offer_source_id'   => $offerSource->id,
-                'offer_source_name' => $offerSource->name, 
-                'offer_id'          => $offer->id,
-                'offer_name'        => $offer->name,        
-                'source_id'         => $request->source_id,
-                'created_at'        => $request->sales_date,
-            ]);
+            foreach (range(1, $request->count) as $i) {
+                Sale::create([
+                    'user_id'           => auth()->id(),
+                    'offer_source_id'   => $offerSource->id,
+                    'offer_source_name' => $offerSource->name, 
+                    'offer_id'          => $offer->id,
+                    'offer_name'        => $offer->name,        
+                    'source_id'         => $request->source_id,
+                    'created_at'        => $request->sales_date,
+                ]);
+            }
 
             // dd($sale);
 

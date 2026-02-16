@@ -26,7 +26,10 @@ Route::post('/dashboard', [adminController::class, 'generateSalesFileMatchTable'
 Route::get('/dashboard', [adminController::class, 'showSalesFileMatches'])->middleware(['auth', 'verified'])->name('dashboard.get');
 
 
-Route::get('/dashboard2', [salesController::class, 'SalesDashboard'])->middleware(['auth', 'verified'])->name('dashboard2');
+Route::get('/dashboard2', [salesController::class, 'SalesDashboard'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard2');
+    
 Route::post('/dashboard2/create', [salesController::class, 'SaveSales'])
     ->middleware(['auth', 'verified'])
     ->name('salesman.store');

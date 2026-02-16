@@ -47,6 +47,15 @@
                         <input type="date" name="sales_date" value="{{ old('sales_date') }}" max="{{ now()->format('Y-m-d') }}" class="w-full border p-2" required>
                     </div>
 
+                    {{-- sales quantity --}}
+                    <div class="mb-4 mt-4">
+                        <label class="block mb-2">Sales Quantity</label>
+                        <input type="number" name="count" value="1" min="1" step="1" class="w-full border p-2" required>
+                    </div>
+
+
+                    {{-- Submit Button --}}
+
                     <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded">
                         Submit
                     </button>
