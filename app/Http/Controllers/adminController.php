@@ -307,32 +307,35 @@ class adminController extends Controller
     }
 
 
-    public function generateSalesFileMatchTable(Request $request)
-    {
+public function generateSalesFileMatchTable(Request $request)
+{
+    $request->flash();
 
-        $request->flash();
-        // All usernames for dropdown
-        $users = User::orderBy('name')->pluck('name');
+    $users = User::orderBy('name')->pluck('name');
 
-        $data = collect();
-        $selectedUser = $request->username;
-        $startDate = $request->start_date;
-        $endDate = $request->end_date;
+    $data = collect();
+    $selectedUser = $request->username;
+    $startDate = $request->start_date;
+    $endDate = $request->end_date;
 
-        if ($request->filled(['username','start_date','end_date'])) {
+    if ($request->filled(['start_date','end_date'])) {
 
-            $user = User::where('name', $selectedUser)->firstOrFail();
-
-            $data = DB::table('sales as s')
+        $query = DB::table('sales as s')
             ->leftJoin('files as f', function ($join) use ($startDate, $endDate) {
                 $join->on('s.offer_source_name', '=', 'f.offer_source')
-                    ->on('s.offer_name', '=', 'f.offer_name')
-                    ->on('s.source_id', '=', 'f.source_id')
-                    ->whereBetween('f.date_time', [$startDate, $endDate]);
+                     ->on('s.offer_name', '=', 'f.offer_name')
+                     ->on('s.source_id', '=', 'f.source_id')
+                     ->whereBetween('f.date_time', [$startDate, $endDate]);
             })
             ->join('users as u', 's.user_id', '=', 'u.id')
-            ->where('s.user_id', $user->id)
-            ->whereBetween('s.created_at', [$startDate, $endDate])
+            ->whereBetween('s.created_at', [$startDate, $endDate]);
+
+        // J If username selected → filter
+        if (!empty($selectedUser)) {
+            $query->where('u.name', $selectedUser);
+        }
+
+        $data = $query
             ->groupBy(
                 'u.name',
                 's.source_id',
@@ -349,25 +352,22 @@ class adminController extends Controller
             )
             ->get();
 
-            foreach ($data as $row) {
-                $row->matched = ($row->total_sales == $row->target) ? 'Yes' : 'No';
-            }
+        foreach ($data as $row) {
+            $row->matched = ($row->total_sales == $row->target) ? 'Yes' : 'No';
         }
-
-        $saleuser = Sale::select('user_id')->distinct()->with('user')->get();
-
-        // dd($data, $users, $selectedUser, $startDate, $endDate, $saleuser);
-
-        return view('admindashboard', compact(
-            'data',
-            'users',
-            'selectedUser',
-            'startDate',
-            'endDate',
-            'saleuser'
-        ));
-
     }
+
+    $saleuser = Sale::select('user_id')->distinct()->with('user')->get();
+
+    return view('admindashboard', compact(
+        'data',
+        'users',
+        'selectedUser',
+        'startDate',
+        'endDate',
+        'saleuser'
+    ));
+}
 
 
 

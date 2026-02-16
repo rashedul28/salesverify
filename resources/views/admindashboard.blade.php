@@ -27,7 +27,7 @@
                                             <input type="date" name="end_date" id="end_date" max="{{ now()->format('Y-m-d') }}" value="{{ old('end_date') }}" class="form-control" required>
                                            
                                             <label for="salesman">User</label>
-                                            <select name="username" class="form-select" required>
+                                            <select name="username" class="form-select" >
                                                 <option value="">Select User</option>
                                                 @foreach($saleuser as $sale)  <!-- $data -> $sale change -->
                                                     <option value="{{ $sale->user->name }}" {{ old('username') == $sale->user->name ? 'selected' : '' }}>
