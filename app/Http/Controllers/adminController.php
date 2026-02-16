@@ -327,6 +327,7 @@ class adminController extends Controller
             ->leftJoin('files as f', function ($join) use ($startDate, $endDate) {
                 $join->on('s.offer_source_name', '=', 'f.offer_source')
                     ->on('s.offer_name', '=', 'f.offer_name')
+                    ->on('s.source_id', '=', 'f.source_id')
                     ->whereBetween('f.date_time', [$startDate, $endDate]);
             })
             ->join('users as u', 's.user_id', '=', 'u.id')
