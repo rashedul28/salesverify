@@ -41,17 +41,17 @@ class salesController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $offerSources = OfferSource::all();
+    //  */
+    // public function create()
+    // {
+    //     $offerSources = OfferSource::all();
 
-        // offers with source_id
-        $offers = Offer::select('id', 'name', 'offer_source_id')->get();
+    //     // offers with source_id
+    //     $offers = Offer::select('id', 'name', 'offer_source_id')->get();
 
-        return view('salesman.sales', compact('offerSources', 'offers'));
+    //     return view('salesman.sales', compact('offerSources', 'offers'));
         
-    }
+    // }
 
 
 
@@ -62,23 +62,38 @@ class salesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function SaveSales(Request $request)
     {
-             $request->validate([
-                'offer_source_id' => 'required|exists:offer_sources,id',
-                'offer_id'        => 'required|exists:offers,id',
-                'source_id'       => 'required|exists:source_ids,id',
-                'sales_date'      => 'required|date|before_or_equal:today',
-            ]);
+
+            // \Log::info('Received sales data', $request->all());
+            // dd($request->all());
+    
+            //  $request->validate([
+            //     'offer_source_id' => 'required|exists:offer_sources,id',
+            //     'offer_id'        => 'required|exists:offers,id',
+            //     'source_id'       => 'required|exists:source_ids,id',
+            //     'sales_date'      => 'required|date|before_or_equal:today',
+            //     ]);
+
+            
 
             $offerSource = OfferSource::find($request->offer_source_id);
             $offer       = Offer::find($request->offer_id);
 
+            // dd($offerSource, $offer);
+
+            // \Log::info('Validated offer source and offer', [
+            //     'offer_source_id' => $offerSource->id,
+            //     'offer_id'        => $offer->id,
+            // ]);
+
             // safety check
             if ($offer->offer_source_id != $offerSource->id) {
+                dd('Offer source and offer mismatch');
                 return back()->withErrors(['offer_id' => 'Offer mismatch']);
-                // dd('Offer mismatch');
+                
             }
+
 
             Sale::create([
                 'user_id'           => auth()->id(),
@@ -89,7 +104,11 @@ class salesController extends Controller
                 'source_id'         => $request->source_id,
                 'created_at'        => $request->sales_date,
             ]);
-            // dd($request->all());
+
+            // dd($sale);
+
+            // \Log::info('Sale created successfully', ['id' => $sale->id, 'user_id' => auth()->id()]);
+            
 
             return redirect()->route('dashboard2')->with('success', 'Sale recorded successfully.');
     }

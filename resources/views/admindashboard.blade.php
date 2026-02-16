@@ -27,12 +27,11 @@
                                             <input type="date" name="end_date" id="end_date" max="{{ now()->format('Y-m-d') }}" value="{{ old('end_date') }}" class="form-control" required>
                                            
                                             <label for="salesman">User</label>
-                                            <select name="user_id" class="form-select" required>
+                                            <select name="username" class="form-select" required>
                                                 <option value="">Select User</option>
-                                                @foreach($saleuser as $data)
-                                                    <option value="{{ $data->user_id }}">
-                                                        {{ old('user_id') == $data->user_id ? 'selected' : '' }}
-                                                        {{ $data->user->name }}
+                                                @foreach($saleuser as $sale)  <!-- $data -> $sale change -->
+                                                    <option value="{{ $sale->user->name }}" {{ old('username') == $sale->user->name ? 'selected' : '' }}>
+                                                        {{ $sale->user->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -43,41 +42,45 @@
 
 
                                 <div class="card-body">
-                                    @if (isset($report) && count($report) > 0)
-                                    <h2 class="mt-5">Report Results</h2>
-                                    <table id="matchesTable" class="table table-bordered table-striped">
-                                        <thead class="thead-dark">
-                                            <tr>
-                                                <th>No</th>
-                                                <th>User Name</th>
-                                                <th>Source ID</th>
-                                                <th>Offers Source</th>
-                                                <th>Offer Name</th>
-                                                <th>Total Sales</th>
-                                                <th>Target</th>
-                                                <th>Matched?</th>
-                                                <th>Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($report as $row) 
-                                                <tr @class( ['table-danger' => $row['sales'] !== $row['target'], 'table-success' => $row['sales'] === $row['target'] ])>
-                                                    <td>{{ $row['no'] }}</td>
-                                                    <td>{{$selectedUserName}}</td>
-                                                    <td>{{ $row['source_id'] }}</td>
-                                                    <td>{{ $row['offers_source'] }}</td>
-                                                    <td>{{ $row['offer_name'] }}</td>
-                                                    <td>{{ $row['sales'] }}</td>
-                                                    <td>{{ $row['target'] }}</td>
-                                                    <td>{{ $row['verify'] }}</td>
-                                                    <td>{{ $row['date'] }}</td>
+                                    @if (isset($data) && $data->isNotEmpty())  <!-- count() এর বদলে isNotEmpty() ব্যবহার করো, safer -->
+                                        <h2 class="mt-5">Report Results</h2>
+                                        <table id="matchesTable" class="table table-bordered table-striped">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>#</th>  <!-- Row number add করলাম, optional -->
+                                                    <th>User Name</th>
+                                                    <th>Source ID</th>
+                                                    <th>Offer Source</th>
+                                                    <th>Offer Name</th>
+                                                    <th>Total Sales</th>
+                                                    <th>Target</th>
+                                                    <th>Matched?</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                @elseif (isset($report))
-                                    <p class="mt-5">No matching data found for the selected date range.</p>
-                                @endif
+                                            </thead>
+                                            <tbody>
+                                                @foreach($data as $row)
+                                                    <tr>
+                                                        <td>{{ $loop->iteration }}</td>  <!-- Row number -->
+                                                        <td>{{ $row->username }}</td>
+                                                        <td>{{ $row->source_id }}</td>
+                                                        <td>{{ $row->offer_source_name }}</td>
+                                                        <td>{{ $row->offer_name }}</td>
+                                                        <td>{{ $row->total_sales }}</td>
+                                                        <td>{{ $row->target }}</td>
+                                                        <td>
+                                                            @if($row->matched == 'Yes')
+                                                                <span class="text-success">Yes</span>
+                                                            @else
+                                                                <span class="text-danger">No</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @elseif (isset($data))
+                                        <p class="mt-5">No matching data found for the selected date range.</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>

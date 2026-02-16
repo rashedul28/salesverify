@@ -309,79 +309,63 @@ class adminController extends Controller
 
     public function generateSalesFileMatchTable(Request $request)
     {
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'user_id' => 'required|integer|exists:users,id',    
-        ]);
 
         $request->flash();
+        // All usernames for dropdown
+        $users = User::orderBy('name')->pluck('name');
 
-        $start = $request->start_date;
-        $end = $request->end_date;
-        $userId = $request->user_id;
+        $data = collect();
+        $selectedUser = $request->username;
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
 
-        // dd($start, $end, $userId);
+        if ($request->filled(['username','start_date','end_date'])) {
 
-        
+            $user = User::where('name', $selectedUser)->firstOrFail();
 
-        // Get grouped sales data for the date range (combinations of source_id, offer_source_name, offer_name)
-        $salesGroups = Sale::whereBetween('created_at', [$start . ' 00:00:00', $end . ' 23:59:59'])->where('user_id', $userId)
-            ->groupBy('source_id', 'offer_source_name', 'offer_name')
+            $data = DB::table('sales as s')
+            ->leftJoin('files as f', function ($join) use ($startDate, $endDate) {
+                $join->on('s.offer_source_name', '=', 'f.offer_source')
+                    ->on('s.offer_name', '=', 'f.offer_name')
+                    ->whereBetween('f.created_at', [$startDate, $endDate]);
+            })
+            ->join('users as u', 's.user_id', '=', 'u.id')
+            ->where('s.user_id', $user->id)
+            ->whereBetween('s.created_at', [$startDate, $endDate])
+            ->groupBy(
+                'u.name',
+                's.source_id',
+                's.offer_source_name',
+                's.offer_name'
+            )
             ->select(
-                'source_id',
-                'offer_source_name as offers_source',
-                'offer_name',
-                DB::raw('count(*) as sales')
+                'u.name as username',
+                's.source_id',
+                's.offer_source_name',
+                's.offer_name',
+                DB::raw('COUNT(DISTINCT s.id) as total_sales'),
+                DB::raw('COUNT(DISTINCT f.id) as target')
             )
             ->get();
 
-        // In generateSalesFileMatchTable()
-        $fileGroups = File::whereBetween('created_at', [$start . ' 00:00:00', $end . ' 23:59:59'])
-            ->groupBy('source_id', 'offer_source', 'offer_name')  // ← Change 'offer' to 'offer_name'
-            ->select(
-                'source_id',
-                'offer_source as offers_source',
-                'offer_name',  // ← No alias needed if already named correctly
-                DB::raw('count(*) as target')
-            )
-            ->get()
-            ->keyBy(function ($item) {
-                return $item->source_id . '|' . strtolower(trim($item->offers_source)) . '|' . strtolower(trim($item->offer_name));
-            });
-
-            // dd($fileGroups, $salesGroups);
-
-        // Build the report array (only include rows where there is a matching combination in sales)
-        $report = [];
-        foreach ($salesGroups as $index => $sale) {
-            $compositeKey = $sale->source_id . '|' . strtolower(trim($sale->offers_source)) . '|' . strtolower(trim($sale->offer_name));
-            $target = $fileGroups->has($compositeKey) ? $fileGroups[$compositeKey]->target : 0;
-            $verify = ($sale->sales === $target) ? 'yes' : 'no';
-
-            $report[] = [
-                'no' => $index + 1,
-                'user_id' => $userId, // Include user_id for reference
-                'source_id' => $sale->source_id,
-                'offers_source' => $sale->offers_source,
-                'offer_name' => $sale->offer_name,
-                'sales' => $sale->sales,
-                'target' => $target,
-                'verify' => $verify,
-                'date' => $start . ' to ' . $end,
-            ];
+            foreach ($data as $row) {
+                $row->matched = ($row->total_sales == $row->target) ? 'Yes' : 'No';
+            }
         }
-        
 
-        
-        
         $saleuser = Sale::select('user_id')->distinct()->with('user')->get();
 
-        $selectedUserName = $userId 
-        ? $saleuser->firstWhere('user_id', $userId)?->user?->name 
-        : 'Unknown';
+        // dd($data, $users, $selectedUser, $startDate, $endDate, $saleuser);
 
-        return view('admindashboard', compact('report', 'saleuser', 'selectedUserName'));
+        return view('admindashboard', compact(
+            'data',
+            'users',
+            'selectedUser',
+            'startDate',
+            'endDate',
+            'saleuser'
+        ));
+
     }
 
 

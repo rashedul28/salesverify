@@ -47,6 +47,7 @@ class RegisteredUserController extends Controller
 
         // Send email verification notification
         // $user->sendEmailVerificationNotification();
+        
         $user->markEmailAsVerified();
 
         // Redirect to login page with message instead of auto-login

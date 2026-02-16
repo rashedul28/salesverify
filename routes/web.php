@@ -27,7 +27,9 @@ Route::get('/dashboard', [adminController::class, 'showSalesFileMatches'])->midd
 
 
 Route::get('/dashboard2', [salesController::class, 'SalesDashboard'])->middleware(['auth', 'verified'])->name('dashboard2');
-Route::post('/dashboard2', [salesController::class, 'store'])->middleware(['auth', 'verified'])->name('salesman.store');
+Route::post('/dashboard2/create', [salesController::class, 'SaveSales'])
+    ->middleware(['auth', 'verified'])
+    ->name('salesman.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
