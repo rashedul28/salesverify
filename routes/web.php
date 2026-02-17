@@ -26,13 +26,14 @@ Route::post('/dashboard', [adminController::class, 'generateSalesFileMatchTable'
 Route::get('/dashboard', [adminController::class, 'showSalesFileMatches'])->middleware(['auth', 'verified'])->name('dashboard.get');
 
 
-Route::get('/dashboard2', [salesController::class, 'SalesDashboard'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard2');
-    
+Route::get('/dashboard2', [salesController::class, 'SalesDashboard'])->middleware(['auth', 'verified'])->name('dashboard2');
 Route::post('/dashboard2/create', [salesController::class, 'SaveSales'])
     ->middleware(['auth', 'verified'])
     ->name('salesman.store');
+
+Route::get('/dashboard2/search', [salesController::class, 'SearchSales'])
+    ->middleware(['auth', 'verified'])
+    ->name('sales.filter');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

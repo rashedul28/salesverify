@@ -12,6 +12,11 @@
         <!-- custom favicon -->
         <link rel="icon" type="image/x-icon" href="{{ asset('logo.jpg') }}">
 
+
+        <!-- Flatpickr -->
+         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

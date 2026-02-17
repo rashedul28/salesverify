@@ -115,6 +115,32 @@ class salesController extends Controller
     }
 
 
+    public function SearchSales(Request $request)
+    {
+        $sales = Sale::query();
+
+        if ($request->filled(['start_date', 'end_date'])) {
+            $sales->whereBetween('created_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+
+        $sales = $sales->orderBy('created_at', 'desc')->get();
+
+        // $sales = Sale::where('user_id', auth()->id())->get();
+
+        $sources = SourceId::where('user_id', auth()->id())->get();
+
+        $offerSources = OfferSource::all();
+
+        // offers with source_id
+        $offers = Offer::select('id', 'name', 'offer_source_id')->get();
+
+        return view('salesmandashboard', compact('sales', 'offerSources', 'offers', 'sources'));
+    }
+
+
 
 
 

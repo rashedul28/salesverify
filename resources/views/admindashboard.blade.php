@@ -16,27 +16,34 @@
 
                             <div class="card">
                                 <div class="card-header">
-                                        <form action="{{ route('dashboard.post') }}" method="POST" class="d-inline">
+                                        <form action="{{ route('dashboard.post') }}" method="POST" class="w-full mb-4">
                                             @csrf
                                             @method('POST') <!-- POST method for regeneration -->  
-                                            
-                                            <label for="start_date">Start Date</label>
-                                            <input type="date" name="start_date" id="start_date" max="{{ now()->format('Y-m-d') }}" value="{{ old('start_date')}}" class="form-control" required>
-                                            
-                                            <label for="end_date">End Date</label>
-                                            <input type="date" name="end_date" id="end_date" max="{{ now()->format('Y-m-d') }}" value="{{ old('end_date') }}" class="form-control" required>
-                                           
-                                            <label for="salesman">User</label>
-                                            <select name="username" class="form-select" >
-                                                <option value="">Select User</option>
-                                                @foreach($saleuser as $sale)  <!-- $data -> $sale change -->
-                                                    <option value="{{ $sale->user->name }}" {{ old('username') == $sale->user->name ? 'selected' : '' }}>
-                                                        {{ $sale->user->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                            <div class="grid grid-cols-3 gap-4 w-full">
+                                                <div class="flex flex-col">
+                                                <label for="start_date">Start Date</label>
+                                                <input type="date" name="start_date" id="start_date" max="{{ now()->format('Y-m-d') }}" value="{{ old('start_date')}}" class="form-control" required>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                <label for="end_date">End Date</label>
+                                                <input type="date" name="end_date" id="end_date" max="{{ now()->format('Y-m-d') }}" value="{{ old('end_date') }}" class="form-control" required>
+                                            </div>
+                                                <div class="flex flex-col">
+                                                <label for="salesman">User</label>
+                                                <select name="username" class="form-select" >
+                                                    <option value="">Select User</option>
+                                                    @foreach($saleuser as $sale)  <!-- $data -> $sale change -->
+                                                        <option value="{{ $sale->user->name }}" {{ old('username') == $sale->user->name ? 'selected' : '' }}>
+                                                            {{ $sale->user->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                </div>
+                                                <div class="flex flex-col">
 
-                                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">SUBMIT</button>
+                                                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">SUBMIT</button>
+                                                </div>
+                                            </div>
                                         </form> 
                                 </div>
 
@@ -107,6 +114,23 @@ $(document).ready(function() {
 });
 
 </script>
+
+
+<script>
+        flatpickr("#start_date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            maxDate: "today"
+        });
+
+        flatpickr("#end_date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            maxDate: "today"
+        });
+
+
+    </script>
 @endpush
 
 </x-app-layout> 
