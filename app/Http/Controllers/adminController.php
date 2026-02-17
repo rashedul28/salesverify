@@ -315,8 +315,8 @@ public function generateSalesFileMatchTable(Request $request)
 
     $data = collect();
     $selectedUser = $request->username;
-    $startDate = $request->start_date;
-    $endDate = $request->end_date;
+    $startDate = Carbon::parse($request->start_date)->startOfDay();
+    $endDate = Carbon::parse($request->end_date)->endOfDay();
 
     if ($request->filled(['start_date','end_date'])) {
 
