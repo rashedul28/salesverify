@@ -34,7 +34,11 @@ class salesController extends Controller
 
         // dd($sources->source_id);
 
-        return view('salesmandashboard', compact('sales', 'offerSources', 'offers', 'sources'));
+        if(auth()->user()->role == 'salesman') {
+            return view('salesmandashboard', compact('sales', 'offerSources', 'offers', 'sources'));
+        } else {
+            return back()->withErrors(['Unauthorized' => 'You do not have access to this page.']);
+        }
          
     }
     
