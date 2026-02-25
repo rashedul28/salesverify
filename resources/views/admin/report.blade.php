@@ -22,9 +22,9 @@
                                             @csrf
                                             @method('POST') <!-- POST method for regeneration -->  
                                             <label for="start_date">Start Date</label>
-                                            <input type="date" name="start_date" id="start_date" class="form-control" required>
+                                            <input type="date" name="start_date" id="start_date" class="form-control" autocomplete="off" required>
                                             <label for="end_date">End Date</label>
-                                            <input type="date" name="end_date" id="end_date" class="form-control" required>
+                                            <input type="date" name="end_date" id="end_date" class="form-control" autocomplete="off" required>
                                             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Regenarate Summary</button>
                                         </form> 
                                 </div>
